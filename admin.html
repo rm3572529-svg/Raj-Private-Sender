@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RajX Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue:#1a73e8;--blue-dark:#1557b0;--blue-light:#4a90f7;--accent:#7c4dff;
+  --bg:#f0f4ff;--white:#ffffff;--gray:#f1f3f9;--gray2:#e8ecf4;
+  --text:#1a1d2e;--text2:#5a6282;--text3:#8890a6;
+  --danger:#e53935;--success:#00c853;--warning:#ff9800;
+  --shadow:0 4px 24px rgba(26,115,232,0.10);
+  --radius:16px;--transition:0.25s cubic-bezier(0.4,0,0.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--blue-light);border-radius:4px;}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:240px;background:#fff;border-right:1px solid var(--gray2);padding:24px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0;}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:16px;}
+.sidebar-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--blue),var(--accent));border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.sidebar-logo-text{font-size:16px;font-weight:900;background:linear-gradient(90deg,var(--blue),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sidebar-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:8px 12px 4px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:all var(--transition);font-size:13px;font-weight:600;color:var(--text2);}
+.sidebar-item:hover{background:var(--gray);}
+.sidebar-item.active{background:rgba(26,115,232,0.1);color:var(--blue);}
+.sidebar-item svg{width:18px;height:18px;fill:currentColor;flex-shrink:0;}
+.main{flex:1;overflow-y:auto;}
+
+/* HEADER */
+.admin-header{background:#fff;border-bottom:1px solid var(--gray2);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.page-title{font-size:20px;font-weight:800;color:var(--text);}
+.header-right{display:flex;align-items:center;gap:12px;}
+.admin-badge{background:linear-gradient(90deg,var(--blue),var(--accent));color:#fff;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+
+/* CONTENT */
+.content{padding:24px 28px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px;}
+.stat-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;transition:transform var(--transition);}
+.stat-card:hover{transform:translateY(-2px);}
+.stat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-icon svg{width:24px;height:24px;fill:#fff;}
+.stat-icon.blue{background:linear-gradient(135deg,var(--blue),var(--blue-light));}
+.stat-icon.purple{background:linear-gradient(135deg,var(--accent),#7c4dff);}
+.stat-icon.green{background:linear-gradient(135deg,#00c853,#69f0ae);}
+.stat-icon.orange{background:linear-gradient(135deg,#ff9800,#ffd740);}
+.stat-value{font-size:28px;font-weight:900;color:var(--text);}
+.stat-label{font-size:12px;color:var(--text3);font-weight:500;margin-top:2px;}
+
+/* TABLE */
+.table-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px;}
+.table-header{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gray2);}
+.table-title{font-size:15px;font-weight:800;color:var(--text);}
+.search-box{position:relative;}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;fill:var(--text3);}
+.search-box input{padding:7px 12px 7px 32px;border:1.5px solid var(--gray2);border-radius:8px;font-family:'Poppins',sans-serif;font-size:13px;outline:none;transition:border var(--transition);}
+.search-box input:focus{border-color:var(--blue);}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 16px;font-size:11px;font-weight:700;color:var(--text3);text-align:left;text-transform:uppercase;letter-spacing:0.5px;background:var(--gray);}
+td{padding:12px 16px;font-size:13px;color:var(--text);border-bottom:1px solid var(--gray2);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--gray);}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.badge.active{background:rgba(0,200,83,0.1);color:#00a040;}
+.badge.expired{background:rgba(229,57,53,0.1);color:var(--danger);}
+.badge.locked{background:rgba(124,77,255,0.1);color:var(--accent);}
+.badge.once{background:rgba(26,115,232,0.1);color:var(--blue);}
+.action-btn{padding:5px 10px;border:none;border-radius:6px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all var(--transition);}
+.action-btn.del{background:rgba(229,57,53,0.1);color:var(--danger);}
+.action-btn.del:hover{background:var(--danger);color:#fff;}
+.action-btn.view{background:rgba(26,115,232,0.1);color:var(--blue);}
+.action-btn.view:hover{background:var(--blue);color:#fff;}
+.truncate{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.loader{width:28px;height:28px;border:3px solid var(--gray2);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:20px auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* AUTH */
+#admin-auth{position:fixed;inset:0;background:linear-gradient(135deg,#1a73e8,#7c4dff);display:flex;align-items:center;justify-content:center;z-index:999;}
+.auth-box{background:#fff;border-radius:24px;padding:36px 32px;width:90%;max-width:380px;text-align:center;box-shadow:0 16px 64px rgba(0,0,0,0.2);}
+.auth-box h2{font-size:22px;font-weight:900;margin-bottom:6px;}
+.auth-box p{font-size:13px;color:var(--text2);margin-bottom:24px;}
+.inp{width:100%;background:var(--gray);border:2px solid transparent;border-radius:10px;padding:12px 14px;font-family:'Poppins',sans-serif;font-size:14px;outline:none;transition:all var(--transition);margin-bottom:12px;}
+.inp:focus{border-color:var(--blue);background:#fff;}
+.btn-admin{width:100%;background:linear-gradient(90deg,var(--blue),var(--blue-light));color:#fff;border:none;border-radius:50px;padding:13px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.err-text{color:var(--danger);font-size:13px;margin-top:8px;}
+
+/* Responsive */
+@media(max-width:700px){.sidebar{display:none;}.content{padding:16px;}.stats-grid{grid-template-columns:1fr 1fr;}.admin-header{padding:14px 16px;}}
+</style>
+</head>
+<body>
+
+<!-- ADMIN AUTH -->
+<div id="admin-auth">
+  <div class="auth-box">
+    <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--blue),var(--accent));border-radius:16px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 24 24" width="28" height="28"><path fill="#fff" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+    </div>
+    <h2>Admin Panel</h2>
+    <p>Sign in with admin credentials</p>
+    <input type="email" class="inp" id="admin-email" placeholder="Admin Email"/>
+    <input type="password" class="inp" id="admin-pwd" placeholder="Password" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    <button class="btn-admin" onclick="adminLogin()">Sign In</button>
+    <div class="err-text" id="admin-err"></div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout" id="admin-layout" style="display:none;">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <svg viewBox="0 0 48 48" width="22" height="22">
+          <path d="M8 12 L28 4 L40 14 L28 20 Z" fill="#fff" opacity="0.9"/>
+          <path d="M8 12 L8 36 L28 44 L28 20 Z" fill="rgba(255,255,255,0.6)"/>
+          <path d="M28 20 L40 14 L40 38 L28 44 Z" fill="rgba(255,255,255,0.75)"/>
+          <circle cx="28" cy="20" r="4" fill="#fff"/>
+        </svg>
+      </div>
+      <span class="sidebar-logo-text">RajX Admin</span>
+    </div>
+    <div class="sidebar-label">Menu</div>
+    <div class="sidebar-item active" onclick="showSection('dashboard')">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Dashboard
+    </div>
+    <div class="sidebar-item" onclick="showSection('users')">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Users
+    </div>
+    <div class="sidebar-item" onclick="showSection('links')">
+      <svg viewBox="0 0 24 24"><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm1-4h-4v2h4v-2z"/></svg>
+      Links
+    </div>
+    <div class="sidebar-item" onclick="showSection('reports')">
+      <svg viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+      Reports
+    </div>
+    <div style="flex:1;"></div>
+    <div class="sidebar-item" onclick="adminLogout()" style="color:var(--danger);">
+      <svg viewBox="0 0 24 24" style="fill:var(--danger);"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+      Sign Out
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="admin-header">
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="header-right">
+        <div class="admin-badge">Admin</div>
+        <span id="admin-user-name" style="font-size:13px;color:var(--text2);font-weight:600;"></span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="section-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+            <div><div class="stat-value" id="d-users">—</div><div class="stat-label">Total Users</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple"><svg viewBox="0 0 24 24"><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm1-4h-4v2h4v-2z"/></svg></div>
+            <div><div class="stat-value" id="d-links">—</div><div class="stat-label">Total Links</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></div>
+            <div><div class="stat-value" id="d-views">—</div><div class="stat-label">Total Views</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange"><svg viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></div>
+            <div><div class="stat-value" id="d-reports">—</div><div class="stat-label">Reports</div></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">Recent Links</div></div>
+          <div id="recent-links-table"><div class="loader"></div></div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="section-users" style="display:none;">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">All Users</div>
+            <div class="search-box">
+              <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" placeholder="Search users..." oninput="filterUsers(this.value)"/>
+            </div>
+          </div>
+          <div id="users-table"><div class="loader"></div></div>
+        </div>
+      </div>
+
+      <!-- LINKS -->
+      <div id="section-links" style="display:none;">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">All Links</div>
+            <div class="search-box">
+              <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" placeholder="Search links..." oninput="filterAllLinks(this.value)"/>
+            </div>
+          </div>
+          <div id="all-links-table"><div class="loader"></div></div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div id="section-reports" style="display:none;">
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">Reports</div></div>
+          <div id="reports-table"><div class="loader"></div></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCCJw87AV8p3ZuFpCtPrUzAdf68Wat1hEI",
+  authDomain: "rajxshare.firebaseapp.com",
+  databaseURL: "https://rajxshare-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rajxshare",
+  storageBucket: "rajxshare.firebasestorage.app",
+  messagingSenderId: "721905875008",
+  appId: "1:721905875008:web:ea3ea685fee5b1620cc7a5"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let allUsers = [], allLinks = [], allReports = [];
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('admin-auth').style.display = 'none';
+    document.getElementById('admin-layout').style.display = 'flex';
+    document.getElementById('admin-user-name').textContent = user.email;
+    loadAll();
+  }
+});
+
+async function adminLogin() {
+  const email = document.getElementById('admin-email').value.trim();
+  const pwd = document.getElementById('admin-pwd').value;
+  document.getElementById('admin-err').textContent = '';
+  try {
+    await auth.signInWithEmailAndPassword(email, pwd);
+  } catch(e) {
+    document.getElementById('admin-err').textContent = 'Invalid credentials';
+  }
+}
+function adminLogout() {
+  auth.signOut().then(() => { location.reload(); });
+}
+
+async function loadAll() {
+  await Promise.all([loadUsers(), loadLinks(), loadReports()]);
+  renderDashboard();
+}
+
+async function loadUsers() {
+  try {
+    const snap = await db.collection('users').orderBy('createdAt','desc').limit(200).get();
+    allUsers = [];
+    snap.forEach(d => allUsers.push({...d.data(), uid: d.id}));
+  } catch(e) { allUsers = []; }
+}
+async function loadLinks() {
+  try {
+    const snap = await db.collection('links').orderBy('createdAt','desc').limit(500).get();
+    allLinks = [];
+    snap.forEach(d => allLinks.push({...d.data(), docId: d.id}));
+  } catch(e) { allLinks = []; }
+}
+async function loadReports() {
+  try {
+    const snap = await db.collection('reports').orderBy('reportedAt','desc').limit(100).get();
+    allReports = [];
+    snap.forEach(d => allReports.push({...d.data(), docId: d.id}));
+  } catch(e) { allReports = []; }
+}
+
+function renderDashboard() {
+  const totalViews = allLinks.reduce((s,l)=>s+(l.views||0),0);
+  document.getElementById('d-users').textContent = allUsers.length;
+  document.getElementById('d-links').textContent = allLinks.length;
+  document.getElementById('d-views').textContent = totalViews;
+  document.getElementById('d-reports').textContent = allReports.length;
+  // Recent links table
+  const recent = allLinks.slice(0,10);
+  document.getElementById('recent-links-table').innerHTML = buildLinksTable(recent);
+}
+
+function buildLinksTable(links) {
+  if (!links.length) return '<p style="padding:20px;color:var(--text3);font-size:13px;">No links found</p>';
+  return `<table>
+    <thead><tr><th>ID</th><th>Preview</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${links.map(l => {
+      const now = Date.now();
+      const expired = l.expiry && l.expiry.toDate && l.expiry.toDate().getTime() < now;
+      const status = expired ? '<span class="badge expired">Expired</span>' : '<span class="badge active">Active</span>';
+      const badges = [status];
+      if (l.hasPassword) badges.push('<span class="badge locked">Locked</span>');
+      if (l.isOnce) badges.push('<span class="badge once">Once</span>');
+      const preview = (l.content||'').substr(0,50);
+      return `<tr>
+        <td style="font-weight:700;color:var(--blue);">${l.id||l.docId}</td>
+        <td class="truncate" style="max-width:200px;">${escHtml(preview)}</td>
+        <td style="font-weight:700;">${l.views||0}</td>
+        <td>${badges.join(' ')}</td>
+        <td style="display:flex;gap:6px;">
+          <button class="action-btn view" onclick="window.open('index.html?l=${l.id||l.docId}','_blank')">View</button>
+          <button class="action-btn del" onclick="deleteAdminLink('${l.docId}')">Delete</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function buildUsersTable(users) {
+  if (!users.length) return '<p style="padding:20px;color:var(--text3);font-size:13px;">No users found</p>';
+  return `<table>
+    <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Links</th></tr></thead>
+    <tbody>${users.map(u => {
+      const userLinks = allLinks.filter(l=>l.createdBy===u.uid).length;
+      const date = u.createdAt ? (u.createdAt.toDate ? u.createdAt.toDate().toLocaleDateString() : '—') : '—';
+      return `<tr>
+        <td style="font-weight:700;">${escHtml(u.name||'—')}</td>
+        <td style="color:var(--text2);">${escHtml(u.email||'—')}</td>
+        <td style="color:var(--text3);">${date}</td>
+        <td><span class="badge active">${userLinks}</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function buildReportsTable(reports) {
+  if (!reports.length) return '<p style="padding:20px;color:var(--text3);font-size:13px;">No reports</p>';
+  return `<table>
+    <thead><tr><th>Link ID</th><th>Reason</th><th>Details</th><th>Date</th><th>Action</th></tr></thead>
+    <tbody>${reports.map(r => {
+      const date = r.reportedAt ? (r.reportedAt.toDate ? r.reportedAt.toDate().toLocaleDateString() : '—') : '—';
+      return `<tr>
+        <td style="font-weight:700;color:var(--blue);">${r.linkId||'—'}</td>
+        <td><span class="badge expired">${escHtml(r.reason||'—')}</span></td>
+        <td class="truncate">${escHtml(r.details||'—')}</td>
+        <td style="color:var(--text3);">${date}</td>
+        <td><button class="action-btn del" onclick="deleteLink('${r.linkId}')">Delete Link</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function showSection(s) {
+  ['dashboard','users','links','reports'].forEach(x=>{
+    document.getElementById('section-'+x).style.display = x===s ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sidebar-item').forEach((el,i)=>{
+    el.classList.toggle('active', el.textContent.trim().toLowerCase().includes(s));
+  });
+  const titles = {dashboard:'Dashboard',users:'Users',links:'Links',reports:'Reports'};
+  document.getElementById('page-title').textContent = titles[s]||s;
+  if (s==='users') document.getElementById('users-table').innerHTML = buildUsersTable(allUsers);
+  if (s==='links') document.getElementById('all-links-table').innerHTML = buildLinksTable(allLinks);
+  if (s==='reports') document.getElementById('reports-table').innerHTML = buildReportsTable(allReports);
+}
+
+function filterUsers(q) {
+  const f = q ? allUsers.filter(u=>(u.name||'').toLowerCase().includes(q.toLowerCase())||(u.email||'').toLowerCase().includes(q.toLowerCase())) : allUsers;
+  document.getElementById('users-table').innerHTML = buildUsersTable(f);
+}
+function filterAllLinks(q) {
+  const f = q ? allLinks.filter(l=>(l.content||'').toLowerCase().includes(q.toLowerCase())||(l.id||'').includes(q)) : allLinks;
+  document.getElementById('all-links-table').innerHTML = buildLinksTable(f);
+}
+
+async function deleteAdminLink(id) {
+  if (!confirm('Delete this link?')) return;
+  await db.collection('links').doc(id).delete();
+  allLinks = allLinks.filter(l=>l.docId!==id);
+  renderDashboard();
+  document.getElementById('recent-links-table').innerHTML = buildLinksTable(allLinks.slice(0,10));
+  if (document.getElementById('section-links').style.display!=='none')
+    document.getElementById('all-links-table').innerHTML = buildLinksTable(allLinks);
+  alert('Deleted');
+}
+async function deleteLink(id) {
+  if (!id||!confirm('Delete link '+id+'?')) return;
+  await db.collection('links').doc(id).delete().catch(()=>{});
+  allLinks = allLinks.filter(l=>l.id!==id&&l.docId!==id);
+  alert('Deleted');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

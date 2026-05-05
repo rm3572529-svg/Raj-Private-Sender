@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a73e8"/>
+      <stop offset="50%" stop-color="#1557b0"/>
+      <stop offset="100%" stop-color="#7c4dff"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.18)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(26,115,232,0.5)"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)" filter="url(#shadow)"/>
+  <!-- Shine overlay -->
+  <rect width="512" height="512" rx="112" fill="url(#shine)"/>
+
+  <!-- Main 3D arrow/send icon made of geometric faces -->
+  <!-- Left dark face -->
+  <polygon points="80,130 256,56 256,280 80,380" fill="rgba(255,255,255,0.35)" filter="url(#glow)"/>
+  <!-- Top bright face -->
+  <polygon points="256,56 432,130 432,200 256,280" fill="rgba(255,255,255,0.92)"/>
+  <!-- Right medium face -->
+  <polygon points="432,200 432,380 256,456 256,280" fill="rgba(255,255,255,0.6)"/>
+  <!-- Bottom face connector -->
+  <polygon points="80,380 256,280 256,456 80,380" fill="rgba(255,255,255,0.18)"/>
+
+  <!-- Center glowing orb -->
+  <circle cx="256" cy="210" r="44" fill="white" opacity="0.95" filter="url(#glow)"/>
+  <circle cx="256" cy="210" r="28" fill="url(#bg)" opacity="0.85"/>
+  <circle cx="246" cy="200" r="8" fill="white" opacity="0.8"/>
+
+  <!-- Brand text -->
+  <text x="256" y="490" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="52" fill="white" opacity="0.92" letter-spacing="-1">RAJX</text>
+</svg>
